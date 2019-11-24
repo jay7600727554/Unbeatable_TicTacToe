@@ -8,6 +8,7 @@ using namespace std;
 //Shown at top of every screen
 void welcome()
 {
+    system("CLS");
     cout << "Welcome to Tic-Tac-Toe by Jay" << endl;
     cout << "-----------------------------" << endl << endl;
 }
@@ -15,7 +16,6 @@ void welcome()
 //Instruction function. Shown only first time
 void instruction()
 {
-    system("CLS");
     welcome();
     cout << "This is board: " << endl << endl;
     cout << "       |       |       " << endl;
@@ -54,7 +54,6 @@ void displayBoard(char posArr[9])
 char getHumanMark()
 {
     char mark;
-    system("CLS");
     welcome();
     cout << "Enter your mark -> ";
     mark = _getch(); // Used getch() instead of cin so that user need not press enter after input
@@ -74,7 +73,6 @@ char getCompMark(char hm) // hm = HUman Mark
 //One time called function to display marks after selection
 void displayMarks(char hm, char cm)
 {
-    system("CLS");
     welcome();
     cout << "Your mark is '" << hm << "' and Computer's mark is '" << cm << "'" << endl;
     system("pause");
@@ -86,14 +84,13 @@ void printScore(int score[3])
     cout << "Score: Human = " << score[0] << ", Computer = " << score[1] << ", Draw = " << score[2] << endl;
 }
 
-/*
-This function clears screen,
-Display welcome message,
-print current score and then display the game board
-*/
+
+//This function clears screen,
+//Display welcome message,
+//print current score and then display the game board
+
 void displayGame(int score[3], char posArr[9])
 {
-    system("CLS");
     welcome();
     printScore(score);
     displayBoard(posArr);
@@ -135,22 +132,22 @@ char winner(char posArr[9])
 //Apply minimax algorith
 //Maximise the score for computers turn
 //Minimise the score for humans turn
-int getScore(char posArr[9], char humanMark, char compMark, int turn)
+int getScore(char posArr[9], char humanMark, char compMark, int turn, int l)
 {
     char posArr2[9];
     int score, score1;
 
     char win = winner(posArr);
     if(win == compMark)
-        return 100;
+        return 100-l;
     else if(win == humanMark)
-        return -100;
+        return -(100-l);
     else if(win == 'd')
         return 0;
 
     if(turn == 0) //Human's turn
     {
-        score1 = 1000; 
+        score1 = 1000;
         for (int i = 0; i < 9; i++)
         {
             for(int j = 0; j < 9; j++)
@@ -158,7 +155,7 @@ int getScore(char posArr[9], char humanMark, char compMark, int turn)
             if(posArr2[i] == '\0') //Find an empty space
             {
                 posArr2[i] = humanMark; //Check the score if move is made on that empty space
-                score = getScore(posArr2, humanMark, compMark, 1);
+                score = getScore(posArr2, humanMark, compMark, 1, l+1);
                 if(score < score1)
                     score1 = score; //Return the minimum score
             }
@@ -174,7 +171,7 @@ int getScore(char posArr[9], char humanMark, char compMark, int turn)
             if(posArr2[i] == '\0')  //Find empty space
             {
                 posArr2[i] = compMark;  //Check the score if move is made on that empty space
-                score = getScore(posArr2, humanMark, compMark, 0);
+                score = getScore(posArr2, humanMark, compMark, 0, l+1);
                 if(score > score1)
                     score1 = score;  //Return the maximum score
             }
@@ -200,7 +197,7 @@ int compMove(char posArr[9], char humanMark, char compMark)
         if(posArr2[i] == '\0') //Find emppty space
         {
             posArr2[i] = compMark;  //Check score for this position
-            score[i] = getScore(posArr2, humanMark, compMark, 0);
+            score[i] = getScore(posArr2, humanMark, compMark, 0, 0);
         }
     }
 
@@ -238,7 +235,7 @@ char startGame(int score[3], char humanMark, char compMark)
                 temp = _getch();                //Input integer position as char (because of getch())
                 position = (int)temp - 48;      //Converting char to int
                 position--;                     //Human's position start from 1, comps start from 0
-                cout << "\r";                   //In case of invalid input we want to reask input on same line so use '\r'
+                cout << "\r";                   //In case of invalid input we want to ask for input again on same line so use '\r'
             } while(posArr[position] != '\0' || position < 0 || position > 9);
             posArr[position] = humanMark;       //Put human mark
             turn = 1;                           //Change the turn
